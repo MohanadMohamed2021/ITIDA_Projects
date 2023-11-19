@@ -1,0 +1,2 @@
+   text	   data	    bss	    dec	    hex	filename
+  19632	     88	    691	  20411	   4fbb	build/led.elf

@@ -2,7 +2,7 @@
 
 # Compiler and flags
 CC = avr-gcc
-CFLAGS = -mmcu=atmega32 -I Src/ -I Inc/ -I Lib/ -I Lib/freeRTOS/ -I Lib/KPD/ -I Lib/DIO/ -I Lib/LCD/ 
+CFLAGS = -mmcu=atmega32 -I Src/ -I Inc/ -I Lib/ -I Lib/freeRTOS/ -I Lib/KPD/ -I Lib/DIO/ -I Lib/LCD/ -I Lib/TIMER
 
 # Source files
 SRC_DIR = Src Lib freeRTOS
@@ -18,7 +18,7 @@ LIBS = Lib/libModule.a Lib/libFreeRTOS.a
 led.elf: $(OBJ) $(LIBS)
 	$(CC) $(CFLAGS) $^ -o led.elf
 	mv led.elf build/
-
+	avr-size build/led.elf > build/BinaryReport.txt
 
 # Compile each source file into an object file
 %.o: %.c

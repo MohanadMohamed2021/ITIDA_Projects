@@ -3,10 +3,10 @@
 
 # Compiler and flags
 CC = avr-gcc
-CFLAGS = -mmcu=atmega32 -I DIO/ -I ../Inc/ -I LCD/ -I KPD/
+CFLAGS = -mmcu=atmega32 -I DIO/ -I ../Inc/ -I LCD/ -I KPD/ -I TIMER/
 
 # Source files
-SRC = DIO/dio_programe.c LCD/lcd_programme.c KPD/KPD_program.c
+SRC = DIO/dio_programe.c LCD/lcd_programme.c KPD/KPD_program.c TIMER/timer_programme.c
 
 # Object files
 OBJ = $(SRC:.c=.o)

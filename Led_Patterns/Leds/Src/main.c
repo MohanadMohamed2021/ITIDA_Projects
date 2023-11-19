@@ -5,10 +5,13 @@
 #include "interface.h"
 #include "KPD_interface.h"
 #include "lcd_interface.h"
+#include "timer_interface.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "task.h"
-
+#define APP_HIGH_MODE 230
+#define APP_MED_MODE 150
+#define APP_LOW_MODE 100
 //Global Array to present PIN_ID.........
 u8 APP_au8PinId []= {
 		DIO_u8_PIN0,
@@ -20,7 +23,6 @@ u8 APP_au8PinId []= {
 		DIO_u8_PIN6,
 		DIO_u8_PIN7
 };
-
 //Creating Queue to hold pressed key.........
 xQueueHandle APP_xBuffer;
 
@@ -28,13 +30,13 @@ xQueueHandle APP_xBuffer;
 void APP_KeypadTask(void *pvParameters);
 void APP_voidLedPattern(void *pvParameters);
 
-
 int main(void)
 {
-	//Intiate our modules........
+	//Initiate ........
 	DIO_u8IntialDirection();
 	DIO_u8IntialValue();
 	LCD_voidInitial();
+	TMR0_voidInitial();
 	LCD_voidSendStr("Pattern : ");
 
 	//Creating Queue to hold pressed key.........
@@ -44,11 +46,9 @@ int main(void)
 		LCD_voidClear();
 		LCD_voidSendStr("QueueErr");
 	}
-
 	//Creating the two tasks.......
 	xTaskCreate(&APP_KeypadTask,NULL,configMINIMAL_STACK_SIZE,NULL,1,NULL);
 	xTaskCreate(&APP_voidLedPattern,NULL,configMINIMAL_STACK_SIZE,NULL,2,NULL);
-
 	//Start Scheduler........
 	vTaskStartScheduler();
 	return 0;
@@ -57,7 +57,7 @@ int main(void)
 
 void APP_KeypadTask(void *pvParameters)
 {
-	    char Local_u8Key = KPD_u8_KEY_NOT_PRESSED;  //Create local key and initate it with any number
+	    u8 Local_u8Key = KPD_u8_KEY_NOT_PRESSED;  //Create local key and initate it with any number
 	    while(1)
 	    {
 	        KPD_u8GetKey(&Local_u8Key);
@@ -72,7 +72,7 @@ void APP_KeypadTask(void *pvParameters)
 		        	while(1);
 		        }
 	        }
-	        vTaskDelay(100);
+	        vTaskDelay(1);
 	    }
 }
 void APP_voidLedPattern(void *pvParameters)
@@ -88,9 +88,9 @@ void APP_voidLedPattern(void *pvParameters)
 				{
 					while(1)
 					{
-						DIO_u8SetPortValue(DIO_u8_PORTB,0xff);
+						DIO_u8SetPortValue(DIO_u8_PORTD,0xff);
 						vTaskDelay(500);
-						DIO_u8SetPortValue(DIO_u8_PORTB,0x00);
+						DIO_u8SetPortValue(DIO_u8_PORTD,0x00);
 						vTaskDelay(500);
 						xQueueReceive(APP_xBuffer, &Local_u8Pattern,0);
 						if (Local_u8Pattern > '1')
@@ -106,9 +106,9 @@ void APP_voidLedPattern(void *pvParameters)
 					{
 						for(u8 Local_u8Iteration=0 ; Local_u8Iteration<8 ; Local_u8Iteration++)
 						{
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_HIGH);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_HIGH);
 							vTaskDelay(250);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_LOW);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_LOW);
 						}
 						xQueueReceive(APP_xBuffer, &Local_u8Pattern,0);
 						if (Local_u8Pattern > '2')
@@ -124,9 +124,9 @@ void APP_voidLedPattern(void *pvParameters)
 					{
 						for(s8 Local_s8Iteration=7 ; Local_s8Iteration>=0 ; Local_s8Iteration--)
 						{
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8Iteration],DIO_u8_PIN_HIGH);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8Iteration],DIO_u8_PIN_HIGH);
 							vTaskDelay(250);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8Iteration],DIO_u8_PIN_LOW);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8Iteration],DIO_u8_PIN_LOW);
 						}
 						xQueueReceive(APP_xBuffer, &Local_u8Pattern,0);
 						if (Local_u8Pattern > '3')
@@ -136,23 +136,30 @@ void APP_voidLedPattern(void *pvParameters)
 					}
 						break;
 				}
-				case'4'://Converging every 300ms
+				case'4': //LEDs Shifting Left every 250 msec with varying brightness
 				{
+					u8 Local_u8OCR0=APP_LOW_MODE;
+					DIO_u8SetPinDirection(DIO_u8_PORTB,DIO_u8_PIN3,DIO_u8_PIN_OUTPUT); //to configre generation of pwm
+					DIO_u8SetPinValue(DIO_u8_PORTB,DIO_u8_PIN4,DIO_u8_PIN_HIGH); //to put pulse on the transistor base for the bypass
+					DIO_u8SetPortDirection(DIO_u8_PORTD,DIO_u8_PORT_INPUT); //to switch between portA current and take current from pwm instead
 					while(1)
 					{
-						for(s8 Local_s8FirstIteration=0,Local_s8SecondIteration=7; Local_s8FirstIteration<=3 && Local_s8SecondIteration>=4;
-								Local_s8FirstIteration++,Local_s8SecondIteration--)
+						TMR_voidSetOcr0Value(&Local_u8OCR0);
+						for(u8 Local_u8Iteration=5 ; Local_u8Iteration<8 ; Local_u8Iteration++)
 						{
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8FirstIteration],DIO_u8_PIN_HIGH);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8SecondIteration],DIO_u8_PIN_HIGH);
-							vTaskDelay(300);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8FirstIteration],DIO_u8_PIN_LOW);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8SecondIteration],DIO_u8_PIN_LOW);
+							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_LOW);
+							vTaskDelay(100);
+							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_HIGH);
 						}
-						DIO_u8SetPortValue(DIO_u8_PORTB,0x00);
 						xQueueReceive(APP_xBuffer, &Local_u8Pattern,0);
 						if (Local_u8Pattern > '4')
 					    {
+							DIO_u8SetPinDirection(DIO_u8_PORTB,DIO_u8_PIN3,DIO_u8_PIN_INPUT); /* to reverse all that is done in the beginning*/
+							DIO_u8SetPinValue(DIO_u8_PORTB,DIO_u8_PIN4,DIO_u8_PIN_LOW);/* to reverse all that is done in the beginning*/
+							DIO_u8SetPortDirection(DIO_u8_PORTD,DIO_u8_PORT_OUTPUT);/* to reverse all that is done in the beginning*/
+							DIO_u8SetPinValue(DIO_u8_PORTB,DIO_u8_PIN5,DIO_u8_PIN_LOW);/* to reverse all that is done in the beginning*/
+							DIO_u8SetPinValue(DIO_u8_PORTB,DIO_u8_PIN6,DIO_u8_PIN_LOW);/* to reverse all that is done in the beginning*/
+							DIO_u8SetPinValue(DIO_u8_PORTB,DIO_u8_PIN7,DIO_u8_PIN_LOW);/* to reverse all that is done in the beginning*/
 							break;
 					    }
 					}
@@ -165,13 +172,13 @@ void APP_voidLedPattern(void *pvParameters)
 						for(s8 Local_s8FirstIteration=3,Local_s8SecondIteration=4; Local_s8FirstIteration>=0 && Local_s8SecondIteration<=7;
 								Local_s8FirstIteration--,Local_s8SecondIteration++)
 						{
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8FirstIteration],DIO_u8_PIN_HIGH);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8SecondIteration],DIO_u8_PIN_HIGH);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8FirstIteration],DIO_u8_PIN_HIGH);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8SecondIteration],DIO_u8_PIN_HIGH);
 							vTaskDelay(300);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8FirstIteration],DIO_u8_PIN_LOW);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8SecondIteration],DIO_u8_PIN_LOW);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8FirstIteration],DIO_u8_PIN_LOW);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8SecondIteration],DIO_u8_PIN_LOW);
 						}
-						DIO_u8SetPortValue(DIO_u8_PORTB,0x00);
+						DIO_u8SetPortValue(DIO_u8_PORTD,0x00);
 						xQueueReceive(APP_xBuffer, &Local_u8Pattern,0);
 						if (Local_u8Pattern > '5')
 					    {
@@ -180,22 +187,20 @@ void APP_voidLedPattern(void *pvParameters)
 					}
 						break;
 				}
-				case'6'://PingPong effect every 250ms
+				case'6'://Converging every 300ms
 				{
 					while(1)
 					{
-						for(u8 Local_u8Iteration=0 ; Local_u8Iteration<8 ; Local_u8Iteration++)
+						for(s8 Local_s8FirstIteration=0,Local_s8SecondIteration=7; Local_s8FirstIteration<=3 && Local_s8SecondIteration>=4;
+								Local_s8FirstIteration++,Local_s8SecondIteration--)
 						{
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_HIGH);
-							vTaskDelay(250);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_LOW);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8FirstIteration],DIO_u8_PIN_HIGH);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8SecondIteration],DIO_u8_PIN_HIGH);
+							vTaskDelay(300);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8FirstIteration],DIO_u8_PIN_LOW);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8SecondIteration],DIO_u8_PIN_LOW);
 						}
-						for(s8 Local_s8Iteration=7 ; Local_s8Iteration>=0 ; Local_s8Iteration--)
-						{
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8Iteration],DIO_u8_PIN_HIGH);
-							vTaskDelay(250);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8Iteration],DIO_u8_PIN_LOW);
-						}
+						DIO_u8SetPortValue(DIO_u8_PORTD,0x00);
 						xQueueReceive(APP_xBuffer, &Local_u8Pattern,0);
 						if (Local_u8Pattern > '6')
 					    {
@@ -204,16 +209,23 @@ void APP_voidLedPattern(void *pvParameters)
 					}
 						break;
 				}
-				case'7'://snake effect every 300ms
+
+				case'7'://PingPong effect every 250ms
 				{
 					while(1)
 					{
 						for(u8 Local_u8Iteration=0 ; Local_u8Iteration<8 ; Local_u8Iteration++)
 						{
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_HIGH);
-							vTaskDelay(300);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_HIGH);
+							vTaskDelay(250);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_LOW);
 						}
-						DIO_u8SetPortValue(DIO_u8_PORTB,0x00);
+						for(s8 Local_s8Iteration=7 ; Local_s8Iteration>=0 ; Local_s8Iteration--)
+						{
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8Iteration],DIO_u8_PIN_HIGH);
+							vTaskDelay(250);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_s8Iteration],DIO_u8_PIN_LOW);
+						}
 						xQueueReceive(APP_xBuffer, &Local_u8Pattern,0);
 						if (Local_u8Pattern > '7')
 					    {
@@ -222,20 +234,43 @@ void APP_voidLedPattern(void *pvParameters)
 					}
 						break;
 				}
-				case'8'://Converging/Diverging every 300ms
+				case'8'://snake effect every 300ms
 				{
 					while(1)
 					{
-						for(s8 Local_s8FirstIteration=0,Local_s8SecondIteration=7; Local_s8FirstIteration<8 && Local_s8SecondIteration>=0;
-								Local_s8FirstIteration++,Local_s8SecondIteration--)
+						for(u8 Local_u8Iteration=0 ; Local_u8Iteration<8 ; Local_u8Iteration++)
 						{
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8FirstIteration],DIO_u8_PIN_HIGH);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8SecondIteration],DIO_u8_PIN_HIGH);
+							DIO_u8SetPinValue(DIO_u8_PORTD,APP_au8PinId[Local_u8Iteration],DIO_u8_PIN_HIGH);
 							vTaskDelay(300);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8FirstIteration],DIO_u8_PIN_LOW);
-							DIO_u8SetPinValue(DIO_u8_PORTB,APP_au8PinId[Local_s8SecondIteration],DIO_u8_PIN_LOW);
 						}
-						DIO_u8SetPortValue(DIO_u8_PORTB,0x00);
+						DIO_u8SetPortValue(DIO_u8_PORTD,0x00);
+						xQueueReceive(APP_xBuffer, &Local_u8Pattern,0);
+						if (Local_u8Pattern > '8')
+					    {
+							break;
+					    }
+					}
+						break;
+				}
+				case'9'://All LEDs pulsing from 1-5 volts, then from 5-1 volt every 1000 msec
+				{
+					DIO_u8SetPinDirection(DIO_u8_PORTB,DIO_u8_PIN3,DIO_u8_PIN_OUTPUT); //to configre generation of pwm
+					DIO_u8SetPinDirection(DIO_u8_PORTB,DIO_u8_PIN4,DIO_u8_PIN_OUTPUT); //to put pulse on the transistor base for the bypass
+					DIO_u8SetPinValue(DIO_u8_PORTB,DIO_u8_PIN4,DIO_u8_PIN_HIGH); //to put pulse on the transistor base for the bypass
+					DIO_u8SetPortDirection(DIO_u8_PORTD,DIO_u8_PORT_INPUT); //to switch between portA current and take current from pwm instead
+					while(1)
+					{
+						for(u8 Local_u8Iteration=0;Local_u8Iteration<255;Local_u8Iteration++)
+						{
+							TMR_voidSetOcr0Value(&Local_u8Iteration);
+							vTaskDelay(4);
+						}
+						for(u8 Local_u8Iteration=255;Local_u8Iteration>0;Local_u8Iteration--)
+						{
+							TMR_voidSetOcr0Value(&Local_u8Iteration);
+							vTaskDelay(4);
+						}
+						xQueueReceive(APP_xBuffer, &Local_u8Pattern,0);
 					}
 						break;
 				}
@@ -245,11 +280,9 @@ void APP_voidLedPattern(void *pvParameters)
 		{
 			LCD_voidSendStr("QueueRecieveErr");
 		}
-		vTaskDelay(100);
+		vTaskDelay(1);
 	}
 }
-
-
 
 
 
