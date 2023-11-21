@@ -24,4 +24,3 @@ led.elf: $(OBJ) $(LIBS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean rule to remove the ELF file and object files
