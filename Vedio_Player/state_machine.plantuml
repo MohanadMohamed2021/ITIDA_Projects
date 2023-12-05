@@ -1,0 +1,18 @@
+@startuml vedio_player
+
+[*] -> playing :"open vedio"
+
+state playing {
+    playing ---> paused : "Pressed paused"
+    playing ---> stop : "presssed stop"
+}
+state paused {
+    paused ---> stop :"Pressed stop"
+    paused ---> playing : "Pressed playing"
+}
+state stop {
+    stop ---> playing:"Pressed playing"
+}
+stop --> [*] : "closed vedio"
+
+@enduml
