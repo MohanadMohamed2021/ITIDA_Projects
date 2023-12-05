@@ -1,0 +1,63 @@
+#include <iostream>
+#include <unistd.h>
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+int main() 
+{
+    int q,mark;
+    std::string name;
+    std::map<std::string,int>m;
+    while(1)
+    {
+    std::cout<<"enter querey"<<std::endl;
+    std::cin>>q;
+    switch(q)
+    {
+        case(1):
+        {
+            std::cout<<"enter name & mark"<<std::endl;
+            std::cin>>name>>mark;
+            m.insert({name,mark});
+            break;
+        }
+        case(2):
+        {
+            std::cout<<"enter name to erase"<<std::endl;
+            std::cin>>name;
+            m.erase(m.find(name));
+            break;
+        }
+        case(3):
+        {
+            std::cout<<"enter name to search"<<std::endl;
+            std::cin>>name;
+            if(!m.count(name))
+            {
+                std::cout<<"wrong name"<<std::endl;
+            }
+            else
+            {
+                auto it = m.find(name);
+                std::cout<<it->first<<" "<<it->second<<std::endl;
+            }
+            break;
+        }
+        case(4):
+        {
+            std::map<std::string,int>::iterator its = m.begin();
+            for (; its != m.end() ; ++its)
+            {
+                std::cout<<its->first<<" "<<its->second<<std::endl;
+            }
+            break;
+        }
+        default:
+        {
+            std::cout<<"wrong input"<<std::endl;
+        }       
+    }
+    }
+    return 0;
+}
