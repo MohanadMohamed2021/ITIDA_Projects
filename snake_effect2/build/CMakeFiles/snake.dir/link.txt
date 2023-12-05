@@ -1,0 +1,1 @@
+avr-gcc  -mmcu=atmega32 CMakeFiles/snake.dir/Src/main.c.o -o snake.elf  libDIO_programe.a 

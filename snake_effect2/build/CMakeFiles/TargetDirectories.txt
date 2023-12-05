@@ -1,0 +1,5 @@
+/home/mohanad/Documents/test/snake_effect2/build/CMakeFiles/DIO_programe.dir
+/home/mohanad/Documents/test/snake_effect2/build/CMakeFiles/snake.dir
+/home/mohanad/Documents/test/snake_effect2/build/CMakeFiles/generate_hex.dir
+/home/mohanad/Documents/test/snake_effect2/build/CMakeFiles/edit_cache.dir
+/home/mohanad/Documents/test/snake_effect2/build/CMakeFiles/rebuild_cache.dir

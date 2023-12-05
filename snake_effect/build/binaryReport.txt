@@ -1,0 +1,8 @@
+This info about snake.elf
+   text	   data	    bss	    dec	    hex	filename
+   3000	      8	      0	   3008	    bc0	build/snake.elf
+
+
+This info about snake.hex
+   text	   data	    bss	    dec	    hex	filename
+      0	   3008	      0	   3008	    bc0	build/snake.hex
