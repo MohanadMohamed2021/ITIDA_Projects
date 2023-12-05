@@ -1,2 +1,0 @@
-/usr/bin/ar qc libDIO_programe.a CMakeFiles/DIO_programe.dir/Lib/DIO_programe.c.o
-/usr/bin/ranlib libDIO_programe.a
