@@ -1,0 +1,37 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <math.h>
+
+class Reverse_number
+{
+    private:
+        int reversed_number;
+        int reminder;
+        int number;
+    public:
+        Reverse_number(int cp_number);
+        int Get_reversed_number();
+};
+Reverse_number::Reverse_number(int cp_number):reversed_number(0),number(cp_number){}
+int Reverse_number::Get_reversed_number()
+{
+    while(number!=0)
+    {
+        reminder=number%10;
+        reversed_number=(reversed_number*10)+reminder;
+        number/=10;
+    }
+    return reversed_number;
+}
+int main() 
+{
+    int num;
+    std::cout<<"enter number : ";
+    std::cin>>num;
+    Reverse_number obj(num);
+    int ret=obj.Get_reversed_number();
+    std::cout<<"the reverse of "<<num<<" is "<<ret<<std::endl;
+    return 0;
+}
+
