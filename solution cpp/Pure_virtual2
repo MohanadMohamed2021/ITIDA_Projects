@@ -1,0 +1,33 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <math.h>
+
+template <class T>
+
+class square
+{
+    private:
+        T result;
+    public:
+    square():result(1){}
+    T cal_squre(T base,int exp)
+    {
+        while(exp--)
+        {
+            result*=base;
+        }
+        return result;
+    }
+};
+int main() 
+{
+    square<int> obj;
+    int ret1 = obj.cal_squre(2.5,3);
+    std::cout<<ret1<<std::endl;
+    square<float> obj2;
+    float ret2 = obj2.cal_squre(2.5f,3);
+    std::cout<<ret2<<std::endl;
+    return 0;
+}
+
