@@ -1,0 +1,30 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <math.h>
+
+class CPP
+{
+    public:
+        static int Get_Greatest(int cp_n1,int cp_n2,int cp_n3);
+};
+int CPP::Get_Greatest(int cp_n1,int cp_n2,int cp_n3)
+{
+    int max=cp_n1;
+    if(max<cp_n2)
+    {
+        max=cp_n2;
+    }
+    if(max<cp_n3)
+    {
+        max=cp_n3;
+    }
+    return max;
+}
+int main() 
+{
+    int ret=CPP::Get_Greatest(5,20,10);
+    std::cout<<"max number is "<<ret<<std::endl;
+    return 0;
+}
+
