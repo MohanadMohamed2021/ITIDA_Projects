@@ -1,0 +1,55 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <math.h>
+
+class parent
+{
+    public:
+    virtual void *square(void *ptr,int exp)
+    {
+        std::cout<<"Helo from parent"<<std::endl;
+        return NULL;
+    }
+};
+class child_int:public parent
+{
+    public:
+    void *square(void *ptr,int exp)override
+    {
+        static int i=1;
+        while(exp--)
+        {
+            i = ((i) * (*static_cast<int *>(ptr)));
+        }
+        int *p=&i;
+        return p; 
+    }
+};
+class child_float:public parent
+{
+    public:
+    void *square(void *ptr,int exp)override
+    {
+        static float i=1;
+        while(exp--)
+        {
+            i = ((i) * (*static_cast<float *>(ptr)));
+        }
+        float *p=&i;
+        return p; 
+    }
+};
+int main() 
+{
+    int num1=2;
+    float num2=2.5;
+    child_int obj;
+    void *ret1 = obj.square(&num1,3);
+    std::cout << *static_cast<int *>(ret1) << std::endl; 
+    child_float obj2;
+    void *ret2=obj2.square(&num2,3);
+    std::cout << *static_cast<float *>(ret2) << std::endl;
+    return 0;
+}
+
