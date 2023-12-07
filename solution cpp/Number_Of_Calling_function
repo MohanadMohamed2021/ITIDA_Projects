@@ -1,0 +1,34 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <math.h>
+
+class Serial
+{
+    private:
+        static int count;
+    public:
+        void Check()
+        {
+            count++;
+            std::cout<<"Hello from class"<<std::endl;
+        }
+    static void Display()
+    {
+        std::cout<<"function has been called "<<count<<" times"<<std::endl;
+    }
+};  
+int Serial::count=0;
+int main() 
+{
+    Serial obj;
+    obj.Check();
+    obj.Check();
+    obj.Check();
+    Serial obj2;
+    obj2.Check();
+    obj2.Check();
+    Serial::Display();
+    return 0;
+}
+
