@@ -1,0 +1,52 @@
+[
+    {
+        "FullName": "mohanad_mohamed",
+        "acc": null,
+        "age": "25",
+        "auth": "admin",
+        "bal": null,
+        "log": "0",
+        "pass": "1234",
+        "usr": "mohanad"
+    },
+    {
+        "FullName": "sara",
+        "acc": "27463",
+        "age": "25",
+        "auth": "user",
+        "bal": "140",
+        "log": "0",
+        "pass": "1234",
+        "usr": "sara"
+    },
+    {
+        "FullName": "alaa",
+        "acc": "4377",
+        "age": "26",
+        "auth": "user",
+        "bal": "600335",
+        "log": "0",
+        "pass": "1234",
+        "usr": "alaa"
+    },
+    {
+        "FullName": "karim_mansour",
+        "acc": "14415",
+        "age": "25",
+        "auth": "user",
+        "bal": "945",
+        "log": "0",
+        "pass": "1234",
+        "usr": "karim"
+    },
+    {
+        "FullName": "hamdy",
+        "acc": "30160",
+        "age": "25",
+        "auth": "user",
+        "bal": "9400200",
+        "log": "0",
+        "pass": "1234",
+        "usr": "hamdy"
+    }
+]
