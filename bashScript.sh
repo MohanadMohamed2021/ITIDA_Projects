@@ -4,6 +4,7 @@ git fetch origin ITIDA/Final-Project
 
 git chechout ITIDA/Final-Project
 
+rm DataBase.json Transaction_DataBase.json
 cp ~/server_json/DataBase.json  .
 cp ~/server_json/Transaction_DataBase.json  .
 
