@@ -5,6 +5,7 @@
         "age": "25",
         "auth": "admin",
         "bal": null,
+        "email": "mohanadmohamed202100@gmail.com",
         "log": "0",
         "pass": "1234",
         "usr": "mohanad"
@@ -15,6 +16,7 @@
         "age": "25",
         "auth": "user",
         "bal": "140",
+        "email": "mohamedmohaned012@gmail.com",
         "log": "0",
         "pass": "1234",
         "usr": "sara"
@@ -24,7 +26,8 @@
         "acc": "4377",
         "age": "26",
         "auth": "user",
-        "bal": "1100335",
+        "bal": "1101335",
+        "email": "mohamedmohaned012@gmail.com",
         "log": "0",
         "pass": "1234",
         "usr": "alaa"
@@ -35,6 +38,7 @@
         "age": "25",
         "auth": "user",
         "bal": "945",
+        "email": "mohamedmohaned012@gmail.com",
         "log": "0",
         "pass": "1234",
         "usr": "karim"
@@ -44,7 +48,8 @@
         "acc": "30160",
         "age": "25",
         "auth": "user",
-        "bal": "8399700",
+        "bal": "8323380",
+        "email": "mohamedmohaned012@gmail.com",
         "log": "0",
         "pass": "1234",
         "usr": "hamdy"
