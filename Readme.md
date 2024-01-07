@@ -22,3 +22,4 @@ I've employed `serverService.sh` to connect with `qt_server.service` for control
 I've created a sequence diagram using PlantUML to visualize the interactions in the system.
 
 **Note:** If you intend to use any of the bash features, ensure that you correct the necessary paths.
+<img src="https://t.bkit.co/w_659b198596558.gif" />
