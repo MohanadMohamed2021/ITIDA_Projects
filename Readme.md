@@ -2,6 +2,7 @@
 
 ## Final Project Repository Details
 You can find the final project in the `ITIDA/Final-Project` branch.
+You can find the presentation vedio link on `ITIDA/Final-Project / Presentation`.
 
 ### Project Components
 - `server_json`: The server application.
