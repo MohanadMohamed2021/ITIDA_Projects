@@ -1,5 +1,4 @@
 @startuml mohanad
-!theme crt-amber
 
 title Bank System Sequence Diagram
 
