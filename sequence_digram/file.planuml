@@ -1,0 +1,82 @@
+@startuml mohanad
+!theme crt-amber
+
+title Bank System Sequence Diagram
+
+skinparam noteFontSize 18
+
+actor "Person" as user
+participant "Client App" as client_app
+participant "Server App" as server_app
+database "Data base" as data
+database "Transaction Data base" as trans
+database "Repository" #green
+note right of Repository: Every 24 hours:\nSave Data base and Transaction Data base\nin Repository
+
+data -[#blue]>> Repository: Save for backup
+trans -[#blue]>> Repository: Save for backup
+activate client_app
+user -> client_app: Login as User
+user -> client_app: Login as Admin
+client_app -> user: logout
+user -> client_app: Close Client App
+destroy client_app
+deactivate client_app
+group At Startup
+server_app -> data:  Fetch Data base
+activate data
+data -> server_app
+deactivate data
+server_app -> data:  Force logout on every client  
+server_app -> trans: Fetch Transaction data base
+activate trans
+trans -> server_app
+deactivate trans
+server_app -> client_app: Force logout on every client 
+end
+
+activate server_app
+client_app -[#blue]> server_app : Request to connect 
+alt Request to connect Response
+activate client_app
+else
+server_app -> client_app: Accept connection
+group Admin Authorization
+    client_app -[#green]> server_app: Request to login
+    client_app -[#green]> server_app: Request to logout
+    client_app -[#green]> server_app: Request to help
+    client_app -[#green]> server_app: Invalid Request
+    client_app -[#green]> server_app: Request to get balance
+    client_app -[#green]> server_app: Request to get account number as admin
+    client_app -[#green]> server_app: Request to get Transaction history
+    client_app -[#green]> server_app: Request to Create new user
+    client_app -[#green]> server_app: Request to Update exsisting user
+    client_app -[#green]> server_app: Request to Delete user
+    client_app -[#green]> server_app: Request to get get data base
+end
+
+group User Authorization
+    client_app -> server_app: Request to login
+    client_app -> server_app: Request to logout
+    client_app -> server_app: Request to help
+    client_app -> server_app: Invalid Request
+    client_app -> server_app: Request to get balance
+    client_app -> server_app: Request to get account number
+    client_app -> server_app: Request to get Transaction history
+    client_app -> server_app: Request to Transfer money
+    client_app -> server_app: Request to Deposit money
+    client_app -> server_app: Request to Withdraw money
+end
+else
+server_app -> client_app: Refuse connection
+server_app -> client_app: Client close
+destroy client_app
+end
+
+alt Respond
+server_app -> client_app : Data of valid Request
+else
+server_app -> client_app : Invalid Request 
+deactivate server_app 
+end
+@enduml

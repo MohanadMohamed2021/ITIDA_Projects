@@ -1,0 +1,12 @@
+[Unit]
+Description=Qt Server
+
+[Service]
+Type=simple
+ExecStart=/home/mohanad/server_json/serverService.sh
+Restart=always
+User=mohanad
+WorkingDirectory=/home/mohanad/build-server_test-Desktop_Qt_6_6_1_GCC_64bit-Release
+
+[Install]
+WantedBy=multi-user.target
