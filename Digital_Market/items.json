@@ -1,0 +1,24 @@
+[
+    {
+        "Apple": "25",
+        "Banana": "20",
+        "Grapes": "40",
+        "Mango": "20",
+        "Orange": "50",
+        "Strawberry": "100",
+        "Watermelon": "25",
+        "type": "fruits"
+    },
+    {
+        "Broccoli": "80",
+        "Carrot": "100",
+        "Tomato": "70",
+        "type": "vegetables"
+    },
+    {
+        "Beans": "44",
+        "Corn": "35",
+        "Soup": "55",
+        "type": "canned_foods"
+    }
+]
